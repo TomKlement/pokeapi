@@ -47,17 +47,17 @@ const PokemonCard = ({
   const { main, light } = getTypeColors(types[0]);
 
   return (
-    <div className="card-normal card-bordered w-72 h-96 bg-white shadow-2xl rounded-2xl overflow-hidden relative transition-transform hover:scale-105">
+    <div className="font-[VT323] card-normal card-bordered w-72 h-96 bg-white shadow-2xl rounded-2xl overflow-hidden relative transition-transform hover:scale-105">
       
       <div className={`p-5 card-title flex justify-between items-center text-white text-center ${main}`}>
         <h3 className="ml-2 text-xl text-left uppercase">{name}</h3>
 
-        <div className="flex justify-center gap-2">
+        <div className="flex justify-center gap-2 text-xl">
           {types.map((type) => (
             <div key={type} className="relative group">
               <img src={`/type-icons/${type}.png`} alt={`${type} Type`} className="w-6 h-6" />
 
-              <span className="absolute bottom-full left-1/2 -translate-x-1/2 px-2 py-1 text-xs text-white bg-gray-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+              <span className="text-sm absolute bottom-full left-1/2 -translate-x-1/2 px-2 py-1 text-white bg-gray-600 rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                 {type.toUpperCase()}
               </span>
             </div>
@@ -72,7 +72,7 @@ const PokemonCard = ({
       </div>
 
       {/* Basic stats */}
-      <div className={`h-full card-body relative group flex flex-col items-center w-full px-15 pt-5 pb-6 ${light}`}>
+      <div className={` h-full card-body relative group flex flex-col items-center w-full px-15 pt-5 pb-6 ${light}`}>
         
         {/*Bookmarks */}
         <div 
@@ -80,14 +80,14 @@ const PokemonCard = ({
           onMouseEnter={() => setDisplayMode("moves")}
           onMouseLeave={() => setDisplayMode("default")}
         >
-          <span className="uppercase absolute -translate-y-1/2 left-3 origin-left  text-white text-sm font-semibold rotate-90">
+          <span className="pl-3 uppercase absolute -translate-y-1/2 left-3 origin-left  text-white text-xl font-semibold rotate-90">
             Moves
           </span>
 
 
           {displayMode === "moves" && (
             <div className="absolute  left-4/13 -translate-y-1 text-white text-sm font-semibold transition-opacity duration-300">
-              <ul className="text-center list-disc list-inside flex flex-col gap-1 min-w-max">
+              <ul className="text-center list-disc list-inside flex flex-col gap-1 min-w-max text-base">
               {moves.map((move, i) => {
 
                 const formatted = move
@@ -108,13 +108,13 @@ const PokemonCard = ({
           onMouseEnter={() => setDisplayMode("abilities")}
           onMouseLeave={() => setDisplayMode("default")}
         >
-          <span className="uppercase absolute right-3 origin-right -translate-y-1/2 text-white text-sm font-semibold rotate-270">
+          <span className="uppercase absolute right-3 origin-right -translate-y-1/2 text-white text-xl font-semibold rotate-270">
             Abilities
           </span>
 
           {displayMode === "abilities" && (
             <div className="absolute  left-4/13 -translate-y-1 text-white text-sm font-semibold transition-opacity duration-300">
-              <ul className="list-disc list-inside flex flex-col gap-1 text-center min-w-max">
+              <ul className="list-disc list-inside flex flex-col gap-1 text-center min-w-max text-base">
               {abilities.map((ability, i) => {
 
                 const formatted = ability
@@ -131,7 +131,7 @@ const PokemonCard = ({
           )}
         </div>
 
-        <div className="pt-6 text-center text-sm text-gray-700 w-full">
+        <div className="pt-6 text-center text-base text-gray-700 w-full">
             <div className="grid grid-cols-2 gap-2 w-full text-left">
               <span>EXP:</span> <span className="text-right">{experience}</span>
               <span>Height:</span> <span className="text-right">{height}</span>
