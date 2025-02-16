@@ -14,8 +14,15 @@ type PokemonData = {
   abilities: string[]
 };
 
-const PokemonGrid = () => {
+interface Props {
+  searchTerm: string;
+}
+
+const PokemonGrid: React.FC<Props> = ({ searchTerm }) => {
   const [pokemons, setPokemons] = useState<PokemonData[]>([]);
+  const [offset, setOffset] = useState(0);
+  const [loading, setLoading] = useState(false);
+  
 
   useEffect(() => {
     axios.get("https://pokeapi.co/api/v2/pokemon?limit=50")
@@ -47,9 +54,13 @@ const PokemonGrid = () => {
       .catch((error) => console.error("Error fetching Pokémon:", error));
   }, []);
 
+  const filteredPokemons = pokemons.filter(pokemon =>
+    pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-      {pokemons.map((poke) => (
+      {filteredPokemons.map((poke) => ( // 🔥 Použití filtrování
         <PokemonCard
           key={poke.id}
           name={poke.name}

@@ -47,10 +47,9 @@ const PokemonCard = ({
   const { main, light } = getTypeColors(types[0]);
 
   return (
-    <div className="font-[VT323] card-normal card-bordered w-72 h-96 bg-white shadow-2xl rounded-2xl overflow-hidden relative transition-transform hover:scale-105">
-      
+    <div className="cursor-default font-[VT323] card-normal card-bordered w-72 h-96 bg-white shadow-2xl rounded-2xl overflow-hidden relative transition-transform hover:scale-105">
       <div className={`p-5 card-title flex justify-between items-center text-white text-center ${main}`}>
-        <h3 className="ml-2 text-xl text-left uppercase">{name}</h3>
+        <h3 className="ml-2 text-3xl text-left uppercase">{name}</h3>
 
         <div className="flex justify-center gap-2 text-xl">
           {types.map((type) => (
@@ -80,14 +79,14 @@ const PokemonCard = ({
           onMouseEnter={() => setDisplayMode("moves")}
           onMouseLeave={() => setDisplayMode("default")}
         >
-          <span className="pl-3 uppercase absolute -translate-y-1/2 left-3 origin-left  text-white text-xl font-semibold rotate-90">
+          <span className="tracking-widest pl-0 uppercase absolute -translate-y-1/2 left-3 origin-left  text-white text-xl rotate-90">
             Moves
           </span>
 
 
           {displayMode === "moves" && (
-            <div className="absolute  left-4/13 -translate-y-1 text-white text-sm font-semibold transition-opacity duration-300">
-              <ul className="text-center list-disc list-inside flex flex-col gap-1 min-w-max text-base">
+            <div className="absolute  left-4/13 -translate-y-5 text-white text-sm transition-opacity duration-300">
+              <ul className="text-center list-disc list-inside flex flex-col gap-1 min-w-max text-lg">
               {moves.map((move, i) => {
 
                 const formatted = move
@@ -108,13 +107,13 @@ const PokemonCard = ({
           onMouseEnter={() => setDisplayMode("abilities")}
           onMouseLeave={() => setDisplayMode("default")}
         >
-          <span className="uppercase absolute right-3 origin-right -translate-y-1/2 text-white text-xl font-semibold rotate-270">
-            Abilities
+          <span className="tracking-wider uppercase absolute right-3 origin-right -translate-y-1/2 text-white text-xl rotate-270">
+            Ability
           </span>
 
           {displayMode === "abilities" && (
-            <div className="absolute  left-4/13 -translate-y-1 text-white text-sm font-semibold transition-opacity duration-300">
-              <ul className="list-disc list-inside flex flex-col gap-1 text-center min-w-max text-base">
+            <div className="absolute left-4/13 -translate-y-5 text-white transition-opacity duration-300">
+              <ul className="list-disc list-inside flex flex-col gap-1 text-center min-w-max text-lg">
               {abilities.map((ability, i) => {
 
                 const formatted = ability
@@ -131,7 +130,7 @@ const PokemonCard = ({
           )}
         </div>
 
-        <div className="pt-6 text-center text-base text-gray-700 w-full">
+        <div className="pt-3 text-center text-xl text-gray-700 w-full">
             <div className="grid grid-cols-2 gap-2 w-full text-left">
               <span>EXP:</span> <span className="text-right">{experience}</span>
               <span>Height:</span> <span className="text-right">{height}</span>
