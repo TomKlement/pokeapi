@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import PokemonCard from "./PokemonCard";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 type PokemonData = {
   id: number;
@@ -11,69 +12,143 @@ type PokemonData = {
   weight: number;
   types: string[];
   moves: string[];
-  abilities: string[]
+  abilities: string[];
 };
 
 interface Props {
   searchTerm: string;
 }
 
+interface PokemonAPIItem {
+  name: string;
+  url: string;
+}
+
+interface PokemonAPIResponse {
+  results: PokemonAPIItem[];
+}
+
+const ITEMS_PER_PAGE = 16;
+
 const PokemonGrid: React.FC<Props> = ({ searchTerm }) => {
-  const [pokemons, setPokemons] = useState<PokemonData[]>([]);
-  const [offset, setOffset] = useState(0);
-  const [loading, setLoading] = useState(false);
-  
 
+  const [allPokemonList, setAllPokemonList] = useState<{ id: number; name: string }[]>([]);
+  const [displayedPokemons, setDisplayedPokemons] = useState<PokemonData[]>([]);
+  const [pokemonCache, setPokemonCache] = useState<{ [id: number]: PokemonData }>({});
+  const [currentPage, setCurrentPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true);
+
+  // all pokemons (id, name)
   useEffect(() => {
-    axios.get("https://pokeapi.co/api/v2/pokemon?limit=50")
-      .then(async (response) => {
-
-        const pokemonList = response.data.results;
-
-        const pokemonDetails = await Promise.all(
-          pokemonList.map(async (pokemon: { name: string; url: string }) => {
-            const id = pokemon.url.split("/").slice(-2, -1)[0]; 
-            const details = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
-
-            return {
-              id: Number(id),
-              name: pokemon.name,
-              image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
-              experience: details.data.base_experience,
-              height: details.data.height,
-              weight: details.data.weight,
-              types: details.data.types.map((t: { type: { name: string } }) => t.type.name),
-              moves: details.data.moves.slice(0, 3).map((m: { move: { name: string } }) => m.move.name),
-              abilities: details.data.abilities.map((a: { ability: { name: string } }) => a.ability.name),              
-            };
-          })
-        );
-
-        setPokemons(pokemonDetails);
+    axios
+      .get<PokemonAPIResponse>("https://pokeapi.co/api/v2/pokemon?limit=1500")
+      .then((response) => {
+        const updatedList = response.data.results.map((pokemon: PokemonAPIItem) => {
+          const id = Number(pokemon.url.split("/").slice(-2, -1)[0]);
+          return { id, name: pokemon.name };
+        });
+        setAllPokemonList(updatedList);
       })
-      .catch((error) => console.error("Error fetching Pokémon:", error));
+      .catch((error) => console.error("Error fetching all Pokémon list:", error));
   }, []);
 
-  const filteredPokemons = pokemons.filter(pokemon =>
-    pokemon.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // when "searchTerm" or "allPokemonList" is changed,
+  // reset the displayed Pokemon and load the first batch
 
+  useEffect(() => {
+    setDisplayedPokemons([]);
+ 
+    setHasMore(true);
+
+    const filteredList = searchTerm.length >= 3 ? allPokemonList.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase())) : allPokemonList;
+
+    setCurrentPage(1);
+
+    loadMoreData(filteredList, 1).then(() => {setCurrentPage(2);});
+
+  }, [searchTerm, allPokemonList]);
+
+  // retrieves detailed data for a given "batch"
+  async function loadMoreData(filteredList: { id: number; name: string }[], page: number) {
+    const startIndex = (page - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const currentBatch = filteredList.slice(startIndex, endIndex);
+
+
+    if (currentBatch.length === 0) {
+      setHasMore(false);
+      return;
+    }
+
+    const details = await Promise.all(
+      currentBatch.map((poke) => getPokemonDetail(poke.id, poke.name))
+    );
+
+    setDisplayedPokemons((prev) => [...prev, ...details]);
+
+    if (currentBatch.length < ITEMS_PER_PAGE) {
+      setHasMore(false);
+    }
+  }
+  
+  // returns a detail from the cache or calls the API and stores it in the cache
+  async function getPokemonDetail(id: number, name: string): Promise<PokemonData> {
+
+    if (pokemonCache[id]) {
+      return pokemonCache[id];
+    }
+
+    const response = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`);
+    const details = response.data;
+
+    const newData: PokemonData = {
+      id,
+      name,
+      image: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/${id}.png`,
+      experience: details.base_experience,
+      height: details.height,
+      weight: details.weight,
+      types: details.types.map((t: any) => t.type.name),
+      moves: details.moves.slice(0, 3).map((m: any) => m.move.name),
+      abilities: details.abilities.map((a: any) => a.ability.name),
+    };
+
+    setPokemonCache((prev) => ({ ...prev, [id]: newData }));
+
+    return newData;
+  }
+
+  // function that is called when scroll goes down
+  const fetchMoreData = () => {
+    const filteredList =  searchTerm.length >= 3 ? allPokemonList.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase())) : allPokemonList;
+    loadMoreData(filteredList, currentPage);
+    setCurrentPage((prev) => prev + 1);
+  };
+
+  // infinitescroll -> react library
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-      {filteredPokemons.map((poke) => ( // 🔥 Použití filtrování
-        <PokemonCard
-          key={poke.id}
-          name={poke.name}
-          image={poke.image}
-          experience={poke.experience}
-          height={poke.height}
-          weight={poke.weight}
-          types={poke.types}
-          moves={poke.moves}
-          abilities={poke.abilities}
-        />
-      ))}
-    </div>
+    <InfiniteScroll
+      dataLength={displayedPokemons.length}
+      next={fetchMoreData}
+      hasMore={hasMore}
+      loader={<h4>Loading...</h4>}
+    >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
+        {displayedPokemons.map((poke) => (
+          <PokemonCard
+            key={poke.id}
+            name={poke.name}
+            image={poke.image}
+            experience={poke.experience}
+            height={poke.height}
+            weight={poke.weight}
+            types={poke.types}
+            moves={poke.moves}
+            abilities={poke.abilities}
+          />
+        ))}
+      </div>
+    </InfiniteScroll>
   );
 };
 
