@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import PokemonCard from "./PokemonCard";
 import InfiniteScroll from "react-infinite-scroll-component";
+import PokeballLoader from './PokeballLoader';
 
 type PokemonData = {
   id: number;
@@ -60,7 +61,7 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm }) => {
  
     setHasMore(true);
 
-    const filteredList = searchTerm.length >= 3 ? allPokemonList.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase())) : allPokemonList;
+    const filteredList = searchTerm.length >= 2 ? allPokemonList.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase())) : allPokemonList;
 
     setCurrentPage(1);
 
@@ -131,7 +132,7 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm }) => {
       dataLength={displayedPokemons.length}
       next={fetchMoreData}
       hasMore={hasMore}
-      loader={<h4>Loading...</h4>}
+      loader={<PokeballLoader />}
     >
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
         {displayedPokemons.map((poke) => (

@@ -14,7 +14,7 @@ const getTypeColors = (type: string) => {
     dragon: { main: "bg-indigo-500", light: "bg-indigo-200" },
     flying: { main: "bg-indigo-400", light: "bg-indigo-100" },
     poison: { main: "bg-purple-700", light: "bg-purple-300" },
-    ground: { main: "bg-yellow-700", light: "bg-yellow-300" },
+    ground: { main: "bg-yellow-700", light: "bg-yellow-500" },
     rock: { main: "bg-yellow-800", light: "bg-yellow-400" },
     bug: { main: "bg-lime-600", light: "bg-lime-300" },
     steel: { main: "bg-gray-600", light: "bg-gray-300" },
@@ -103,7 +103,7 @@ const PokemonCard = ({
           )}
         </div>
         <div 
-          className={`pt-10 absolute right-0 h-3/5 w-6 bg-opacity-80 rounded-l-lg transition-all duration-200 ease-in-out ${main} ${displayMode === "abilities" ? "w-57" : ""}`}
+          className={`pt-10 absolute right-0 h-3/5 w-6 bg-opacity-80 rounded-l-lg transition-all duration-2000 ease-in-out ${main} ${displayMode === "abilities" ? "w-57" : ""}`}
           onMouseEnter={() => setDisplayMode("abilities")}
           onMouseLeave={() => setDisplayMode("default")}
         >
