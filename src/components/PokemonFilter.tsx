@@ -25,5 +25,4 @@ const PokemonFilter = ({ onSearch }: Props) => {
       </div>
     );
   };
-
   export default PokemonFilter;

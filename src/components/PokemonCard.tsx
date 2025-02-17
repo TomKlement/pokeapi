@@ -24,31 +24,44 @@ const getTypeColors = (type: string) => {
   return colors[type.toLowerCase()] || { main: "bg-gray-500", light: "bg-gray-200" };
 };
 
-const PokemonCard = ({ 
-  name, 
-  image, 
-  experience, 
-  height, 
-  weight, 
-  types,
-  moves,
-  abilities
-}: { 
-  name: string; 
-  image: string; 
-  experience: number; 
-  height: number; 
-  weight: number; 
+interface PokemonCardProps {
+  id: number;
+  name: string;
+  image: string;
+  experience: number;
+  height: number;
+  weight: number;
   types: string[];
   moves: string[];
   abilities: string[];
+  smallVersion: boolean;
+  hoverScale?: string;
+  onEvolutionsClick?: (id: number) => void;
+  showEvolutionButton?: boolean;
+}
+
+const PokemonCard: React.FC<PokemonCardProps> = ({
+  id,
+  name,
+  image,
+  experience,
+  height,
+  weight,
+  types,
+  moves,
+  abilities,
+  smallVersion,
+  hoverScale,
+  onEvolutionsClick,
+  showEvolutionButton
 }) => {
   const [displayMode, setDisplayMode] = useState<"default" | "moves" | "abilities">("default");
   const { main, light } = getTypeColors(types[0]);
+  const [isHovered, setIsHovered] = useState(false);
 
   return (
-    <div className="cursor-default font-[VT323] card-normal card-bordered w-72 h-96 bg-white shadow-2xl rounded-2xl overflow-hidden relative transition-transform hover:scale-105">
-      <div className={`p-5 card-title flex justify-between items-center text-white text-center ${main}`}>
+    <div className={`${hoverScale ?? "hover:scale-105"} ${smallVersion ? "scale-100" : ""} cursor-default font-[VT323] card-normal w-72 h-96 bg-white shadow-xl rounded-2xl overflow-hidden relative transition-transform`}>
+      <div className={`p-5 flex justify-between items-center text-white text-center ${main}`}>
         <h3 className="ml-2 text-3xl text-left uppercase">{name}</h3>
 
         <div className="flex justify-center gap-2 text-xl">
@@ -68,10 +81,23 @@ const PokemonCard = ({
 
       <div className="flex justify-center items-center p-4">
         <img src={image} alt={name} className="w-32 h-32 object-contain" />
+        <div
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={() => setIsHovered(false)}
+        >
+        { !smallVersion && showEvolutionButton && (
+           <button 
+              onClick={() => onEvolutionsClick?.(id)}
+              className={`cursor-pointer uppercase absolute ${isHovered ? light : main}  text-white text-lg mt-14 py-0 px-1 rounded-tl-lg`}
+              >
+              Evolutions
+              </button>
+         )}
+         </div>
       </div>
 
       {/* Basic stats */}
-      <div className={` h-full card-body relative group flex flex-col items-center w-full px-15 pt-5 pb-6 ${light}`}>
+      <div className={` h-full relative group flex flex-col items-center w-full px-15 pt-5 pb-6 ${light}`}>
         
         {/*Bookmarks */}
         <div 
@@ -103,7 +129,7 @@ const PokemonCard = ({
           )}
         </div>
         <div 
-          className={`pt-10 absolute right-0 h-3/5 w-6 bg-opacity-80 rounded-l-lg transition-all duration-2000 ease-in-out ${main} ${displayMode === "abilities" ? "w-57" : ""}`}
+          className={`pt-10 absolute right-0 h-3/5 w-6 bg-opacity-80 rounded-l-lg transition-all duration-300 ease-in-out ${main} ${displayMode === "abilities" ? "w-57" : ""}`}
           onMouseEnter={() => setDisplayMode("abilities")}
           onMouseLeave={() => setDisplayMode("default")}
         >
@@ -138,7 +164,6 @@ const PokemonCard = ({
             </div>
         </div>
       </div>
-
     </div>
   );
 };

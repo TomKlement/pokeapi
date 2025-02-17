@@ -1,6 +1,5 @@
-
 import React from 'react';
-import './PokeballLoader.css'; // Tady bude CSS pro animaci
+import './PokeballLoader.css';
 
 const PokeballLoader: React.FC = () => {
   return (

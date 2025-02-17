@@ -4,6 +4,7 @@ import PokemonCard from "./PokemonCard";
 import InfiniteScroll from "react-infinite-scroll-component";
 import PokeballLoader from './PokeballLoader';
 
+
 type PokemonData = {
   id: number;
   name: string;
@@ -18,6 +19,7 @@ type PokemonData = {
 
 interface Props {
   searchTerm: string;
+  onEvolutionsClick: (id: number) => void;
 }
 
 interface PokemonAPIItem {
@@ -31,7 +33,7 @@ interface PokemonAPIResponse {
 
 const ITEMS_PER_PAGE = 16;
 
-const PokemonGrid: React.FC<Props> = ({ searchTerm }) => {
+const PokemonGrid: React.FC<Props> = ({ searchTerm, onEvolutionsClick }) => {
 
   const [allPokemonList, setAllPokemonList] = useState<{ id: number; name: string }[]>([]);
   const [displayedPokemons, setDisplayedPokemons] = useState<PokemonData[]>([]);
@@ -61,7 +63,7 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm }) => {
  
     setHasMore(true);
 
-    const filteredList = searchTerm.length >= 2 ? allPokemonList.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase())) : allPokemonList;
+    const filteredList = searchTerm.length >= 3 ? allPokemonList.filter((p) => p.name.toLowerCase().includes(searchTerm.toLowerCase())) : allPokemonList;
 
     setCurrentPage(1);
 
@@ -128,28 +130,34 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm }) => {
 
   // infinitescroll -> react library
   return (
-    <InfiniteScroll
-      dataLength={displayedPokemons.length}
-      next={fetchMoreData}
-      hasMore={hasMore}
-      loader={<PokeballLoader />}
-    >
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6">
-        {displayedPokemons.map((poke) => (
-          <PokemonCard
-            key={poke.id}
-            name={poke.name}
-            image={poke.image}
-            experience={poke.experience}
-            height={poke.height}
-            weight={poke.weight}
-            types={poke.types}
-            moves={poke.moves}
-            abilities={poke.abilities}
-          />
-        ))}
-      </div>
-    </InfiniteScroll>
+    <>
+      <InfiniteScroll
+        dataLength={displayedPokemons.length}
+        next={fetchMoreData}
+        hasMore={hasMore}
+        loader={<PokeballLoader />}
+      >
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">
+          {displayedPokemons.map((poke) => (
+            <PokemonCard
+              key={poke.id}
+              id={poke.id}
+              name={poke.name}
+              image={poke.image}
+              experience={poke.experience}
+              height={poke.height}
+              weight={poke.weight}
+              types={poke.types}
+              moves={poke.moves}
+              abilities={poke.abilities}
+              smallVersion={false}
+              onEvolutionsClick={(id) => onEvolutionsClick(id)}
+              showEvolutionButton={true}
+            />
+          ))}
+        </div>
+      </InfiniteScroll>
+    </>
   );
 };
 
