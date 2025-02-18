@@ -35,9 +35,12 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
 }) => {
   const [loading, setLoading] = useState(false);
   const [evolutionDetails, setEvolutionDetails] = useState<PokeDetail[]>([]);
+  const [anyEvolutions, setAnyEvolutions] = useState("Evolutions")
 
   // useEffect runs whenever the modal is opened
   useEffect(() => {
+    setEvolutionDetails([]);
+    setAnyEvolutions("Evolutions")
 
 
     const fetchEvolutions = async () => {
@@ -47,6 +50,10 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
           `https://pokeapi.co/api/v2/pokemon-species/${pokemonId}`
         );
         const chainURL = speciesResponse.data.evolution_chain.url;
+        if (!chainURL) {
+          setAnyEvolutions("No Evolutions");
+          return;
+        }
         const chainResponse = await axios.get(chainURL);
 
         // recursively collects all Pokemon names from the evolution chain.
@@ -60,6 +67,10 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
         
         //["pichu", "pikachu", "raichu"]
         const speciesNames = getAllSpeciesNames(chainResponse.data.chain);
+        if (speciesNames.length <= 1) {
+          setAnyEvolutions("No Evolutions");
+          return;
+        }
 
         // fetch detailed data for each Pokemon name
         const detailPromises = speciesNames.map((name: string) =>
@@ -70,6 +81,7 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
         setEvolutionDetails(detailResults.map((r) => r.data));
       } catch (error) {
         console.error("Error fetching evolution chain:", error);
+        setAnyEvolutions("No Evolutions");
       } finally {
         setLoading(false);
       }
@@ -84,29 +96,31 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
     <div onClick={onClose} className="fixed inset-0 flex items-center justify-center">
       <div onClick={(e) => e.stopPropagation()} className="p-4 rounded-md relative opacity-95">
         <button onClick={onClose} className="cursor-pointer font-[VT323] fixed top-2 right-2 text-5xl">CLOSE</button>
-        <h2 className="cursor-default font-[VT323] text-8xl mb-4 bg-white rounded-full">Evolutions</h2>
+        <h2 className="cursor-default font-[VT323] px-4 text-6xl md:text-8xl mb-4 bg-white rounded-full">{anyEvolutions}</h2>
         {loading && (
           <div className="flex justify-center items-center">
             <PokeballLoader />
           </div>
         )}
         {!loading && evolutionDetails.length > 0 && (
-          <div className="flex gap-4 items-center justify-center">
+          <div className="flex flex-row whitespace-nowrap overflow-x-auto gap-4 p-4 items-center justify-center">
             {evolutionDetails.map((poke) => (
-              <PokemonCard
-                key={poke.id}
-                id={poke.id}
-                name={poke.name}
-                image={poke.sprites.other["official-artwork"].front_default}
-                experience={poke.base_experience}
-                height={poke.height}
-                weight={poke.weight}
-                types={poke.types.map((t: any) => t.type.name)}
-                moves={poke.moves.slice(0, 3).map((m: any) => m.move.name)} 
-                abilities={poke.abilities.map((a: any) => a.ability.name)}
-                smallVersion={true}
-                hoverScale="hover:scale-105"
-              />
+              <div className="inline-block w-72">
+                <PokemonCard
+                  key={poke.id}
+                  id={poke.id}
+                  name={poke.name}
+                  image={poke.sprites.other["official-artwork"].front_default}
+                  experience={poke.base_experience}
+                  height={poke.height}
+                  weight={poke.weight}
+                  types={poke.types.map((t: any) => t.type.name)}
+                  moves={poke.moves.slice(0, 3).map((m: any) => m.move.name)} 
+                  abilities={poke.abilities.map((a: any) => a.ability.name)}
+                  smallVersion={true}
+                  hoverScale="hover:scale-105"
+                />
+              </div>
             ))}
           </div>
         )}
