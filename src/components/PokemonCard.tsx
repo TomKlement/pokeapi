@@ -62,7 +62,7 @@ const PokemonCard: React.FC<PokemonCardProps> = ({
   return (
     <div className={`${hoverScale ?? "hover:scale-105"} ${smallVersion ? "scale-100" : ""} cursor-default font-[VT323] card-normal w-72 h-96 bg-white shadow-xl rounded-2xl overflow-hidden relative transition-transform`}>
       <div className={`p-5 flex justify-between items-center text-white text-center ${main}`}>
-        <h3 className="ml-2 text-3xl text-left uppercase">{name}</h3>
+        <h3 className="ml-2 text-3xl text-left uppercase truncate w-40">{name}</h3>
 
         <div className="flex justify-center gap-2 text-xl">
           {types.map((type) => (

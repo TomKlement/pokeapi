@@ -135,6 +135,8 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm, onEvolutionsClick }) => {
         dataLength={displayedPokemons.length}
         next={fetchMoreData}
         hasMore={hasMore}
+        scrollableTarget="window"
+        style={{ overflow: 'visible'}}
         loader={<PokeballLoader />}
       >
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-5">

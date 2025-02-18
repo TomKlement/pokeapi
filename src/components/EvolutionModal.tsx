@@ -107,7 +107,7 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
           </div>
         )}
         {!loading && evolutionDetails.length > 0 && (
-          <div className="flex flex-row whitespace-nowrap overflow-x-auto gap-4 p-4 items-center max-w-[500px] md:max-w-none">
+          <div className="flex flex-row whitespace-nowrap overflow-x-auto gap-4 p-4 items-center max-w-[500px] md:max-w-none px-20 ">
             {evolutionDetails.map((poke) => (
               <div className="inline-block w-72">
                 <PokemonCard
