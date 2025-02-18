@@ -2,7 +2,7 @@ import './App.css'
 import PokemonGrid from './components/PokemonGrid'
 import PokemonFilter from "./components/PokemonFilter";
 import EvolutionModal from './components/EvolutionModal';
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function App() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -13,6 +13,14 @@ function App() {
     setSelectedPokemonId(id);
     setIsEvolutionOpen(true);
   }
+
+  useEffect(() => {
+    if (isEvolutionOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+  }, [isEvolutionOpen]);
 
   return (
     <>
@@ -25,11 +33,13 @@ function App() {
         />
       </div>
 
+
       <EvolutionModal
         pokemonId={selectedPokemonId || 0}
         isOpen={isEvolutionOpen}
         onClose={() => setIsEvolutionOpen(false)}
       />
+
     </>
   );
 }

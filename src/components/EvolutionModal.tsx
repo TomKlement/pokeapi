@@ -27,6 +27,7 @@ interface PokeDetail {
   moves: any[];
 }
 
+
 const EvolutionModal: React.FC<EvolutionModalProps> = ({
   pokemonId,
   isOpen,
@@ -35,8 +36,9 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [evolutionDetails, setEvolutionDetails] = useState<PokeDetail[]>([]);
 
+  // useEffect runs whenever the modal is opened
   useEffect(() => {
-    if (!isOpen) return;
+
 
     const fetchEvolutions = async () => {
       try {
@@ -47,7 +49,7 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
         const chainURL = speciesResponse.data.evolution_chain.url;
         const chainResponse = await axios.get(chainURL);
 
-
+        // recursively collects all Pokemon names from the evolution chain.
         const getAllSpeciesNames = (chain: any): string[] => {
           const names = [chain.species.name];
           chain.evolves_to.forEach((evol: any) => {
@@ -55,12 +57,16 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
           });
           return names;
         };
-
+        
+        //["pichu", "pikachu", "raichu"]
         const speciesNames = getAllSpeciesNames(chainResponse.data.chain);
+
+        // fetch detailed data for each Pokemon name
         const detailPromises = speciesNames.map((name: string) =>
           axios.get(`https://pokeapi.co/api/v2/pokemon/${name}`)
         );
         const detailResults = await Promise.all(detailPromises);
+
         setEvolutionDetails(detailResults.map((r) => r.data));
       } catch (error) {
         console.error("Error fetching evolution chain:", error);
@@ -75,8 +81,8 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center">
-      <div className="p-4 rounded-md relative opacity-95">
+    <div onClick={onClose} className="fixed inset-0 flex items-center justify-center">
+      <div onClick={(e) => e.stopPropagation()} className="p-4 rounded-md relative opacity-95">
         <button onClick={onClose} className="cursor-pointer font-[VT323] fixed top-2 right-2 text-5xl">CLOSE</button>
         <h2 className="cursor-default font-[VT323] text-8xl mb-4 bg-white rounded-full">Evolutions</h2>
         {loading && (
@@ -85,7 +91,7 @@ const EvolutionModal: React.FC<EvolutionModalProps> = ({
           </div>
         )}
         {!loading && evolutionDetails.length > 0 && (
-          <div className="flex gap-4">
+          <div className="flex gap-4 items-center justify-center">
             {evolutionDetails.map((poke) => (
               <PokemonCard
                 key={poke.id}
