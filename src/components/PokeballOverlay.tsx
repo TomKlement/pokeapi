@@ -7,20 +7,20 @@ function PokeballOverlay() {
 
   const handleOpen = () => {
     setOpened(true);
-    videoRef.current?.play();
-    audioRef.current?.play();
-  };
 
-  useEffect(() => {
     if (audioRef.current) {
       audioRef.current.volume = 0.4;
+      audioRef.current.play().catch(() => {});
     }
-  }, []);
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  };
 
   return (
     <>
       {/* Video Background */}
-      <video ref={videoRef} className="top-0 left-0 w-full h-full object-cover fixed z-[-1] scale-100" loop>
+      <video ref={videoRef} className="top-0 left-0 w-full h-full object-cover fixed z-[-1] scale-100" loop playsInline>
         <source src="/video.webm" type="video/webm" />
       </video>
 

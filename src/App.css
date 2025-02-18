@@ -31,3 +31,7 @@
   filter: blur(4px) brightness(0.7) saturate(80%);
   transition: filter 0.3s ease;
 }
+
+video {
+  pointer-events: none;
+}
