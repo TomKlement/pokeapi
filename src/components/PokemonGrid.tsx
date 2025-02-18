@@ -31,7 +31,7 @@ interface PokemonAPIResponse {
   results: PokemonAPIItem[];
 }
 
-const ITEMS_PER_PAGE = 16;
+
 
 const PokemonGrid: React.FC<Props> = ({ searchTerm, onEvolutionsClick }) => {
 
@@ -40,6 +40,23 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm, onEvolutionsClick }) => {
   const [pokemonCache, setPokemonCache] = useState<{ [id: number]: PokemonData }>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
+  const [itemsPerPage, setItemsPerPage] = useState(12); 
+
+  // sets the neumber of items (depends on width)
+  useEffect(() => {
+    const updateItemsPerPage = () => {
+      if (window.innerWidth < 768) {
+        setItemsPerPage(8);
+      } else {
+        setItemsPerPage(12);
+      }
+    };
+  
+    updateItemsPerPage();
+    window.addEventListener("resize", updateItemsPerPage);
+  
+    return window.removeEventListener("resize", updateItemsPerPage);
+  }, []);
 
   // all pokemons (id, name)
   useEffect(() => {
@@ -73,8 +90,8 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm, onEvolutionsClick }) => {
 
   // retrieves detailed data for a given "batch"
   async function loadMoreData(filteredList: { id: number; name: string }[], page: number) {
-    const startIndex = (page - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
+    const startIndex = (page - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
     const currentBatch = filteredList.slice(startIndex, endIndex);
 
 
@@ -89,7 +106,7 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm, onEvolutionsClick }) => {
 
     setDisplayedPokemons((prev) => [...prev, ...details]);
 
-    if (currentBatch.length < ITEMS_PER_PAGE) {
+    if (currentBatch.length < itemsPerPage) {
       setHasMore(false);
     }
   }
