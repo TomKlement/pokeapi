@@ -1,6 +1,9 @@
 import { useState } from "react";
 
 const getTypeColors = (type: string) => {
+  if (!type) {
+    return { main: "bg-gray-500", light: "bg-gray-200" };
+  }
   const colors: { [key: string]: { main: string; light: string } } = {
     water: { main: "bg-blue-500", light: "bg-blue-200" },
     fire: { main: "bg-red-500", light: "bg-red-200" },

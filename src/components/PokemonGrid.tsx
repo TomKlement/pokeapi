@@ -176,6 +176,7 @@ const PokemonGrid: React.FC<Props> = ({ searchTerm, onEvolutionsClick }) => {
           ))}
         </div>
       </InfiniteScroll>
+      
     </>
   );
 };
